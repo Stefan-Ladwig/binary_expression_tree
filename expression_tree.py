@@ -83,7 +83,7 @@ class Node():
 
     def _str_subtree(self):
         output = self.symbol
-        if not self.children:
+        if self.children:
             output += ' ('
             for i, child in enumerate(self.children):
                 if i > 0:
