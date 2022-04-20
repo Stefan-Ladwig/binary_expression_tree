@@ -1,5 +1,68 @@
 import graphviz
 import sympy as sym
+import re
+
+
+def parse_expression(expression: str):
+    
+    expression = re.sub(r'\s', '', expression)
+    expression = re.sub(r'\*{2}', '^', expression)
+
+    operator_dict = {
+    'Add': {'+', '-'},
+    'Mul': {'*', '/'},
+    'Pow': {'^'}
+    }
+
+    def check_operator(operators, input):
+        bracket_level = 0
+        for i, c in enumerate(input):
+
+            if c == '(':
+                bracket_level += 1
+
+            elif c == ')':
+                bracket_level -= 1
+
+            elif c in operators and bracket_level == 0:
+                if i == 0 and c == '-':
+                    continue
+                return i
+        
+        return None
+
+    def cleanup(input):
+        bracket_level = 0
+        if input[0] == '(' and input[-1] == ')':
+            for i, c in enumerate(input):
+                    
+                if c == '(':
+                    bracket_level += 1
+
+                elif c == ')':
+                    bracket_level -= 1
+                    if bracket_level == 0 and i < len(input) - 1:
+                        return input
+            
+            return input[1:-1]
+        else:
+            return input
+
+    def rec(input):
+        input = cleanup(input)
+        for operators in ('Add', 'Mul', 'Pow'):
+            idx = check_operator(operator_dict[operators], input)
+            if idx != None:
+                symbol = input[idx]
+                node = Node(symbol)
+                left_child = rec(input[:idx])
+                right_child = rec(input[idx + 1:])
+                node.set_children(left_child, right_child)
+                return node
+
+        return Node(input.strip())
+
+    return Tree(rec(expression))
 
 
 class Node():
@@ -23,7 +86,7 @@ class Node():
         if not self.children:
             output += ' ('
             for i, child in enumerate(self.children):
-                if i == 1:
+                if i > 0:
                     output += ', '
                 output += child._str_subtree()
             output += ') '
@@ -102,8 +165,8 @@ class Tree():
         self.root._set_id('0')
 
 
-    def generate_graph(self):
-        graph = graphviz.Digraph('graph')
+    def generate_graph(self, name='graph'):
+        graph = graphviz.Digraph(name)
         graph.node(self.root.id, self.root.symbol)
         self.root._add_nodes_and_edges_to_graph(graph)
         return graph
