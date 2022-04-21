@@ -27,13 +27,13 @@ def parse_expression(expression: str):
             elif c in operators and bracket_level == 0:
                 if i == 0 and c == '-':
                     continue
-                return i
+                return i           
         
         return None
 
     def cleanup(input):
         bracket_level = 0
-        if input[0] == '(' and input[-1] == ')':
+        while input[0] == '(' and input[-1] == ')':
             for i, c in enumerate(input):
                     
                 if c == '(':
@@ -44,9 +44,9 @@ def parse_expression(expression: str):
                     if bracket_level == 0 and i < len(input) - 1:
                         return input
             
-            return input[1:-1]
-        else:
-            return input
+            input = input[1:-1]
+
+        return input
 
     def rec(input):
         input = cleanup(input)

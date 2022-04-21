@@ -2,10 +2,7 @@ import sympy as sym
 import expression_tree
 
 
-# input = 'dw+(dasd+(sd+(ds-9))+((2*3)-r))'
-        #0123456789012345678901234567890
-
-input = '7 - 3 * 4**(3 / 2)'
+input = '7 + 3 * x^(3 / 2)'
         #0123456789012345678901234567890
 
 
